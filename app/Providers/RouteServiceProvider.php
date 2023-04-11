@@ -7,9 +7,12 @@ use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvi
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
+use Stancl\Tenancy\Middleware\InitializeTenancyByDomain;
+use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
 
 class RouteServiceProvider extends ServiceProvider
 {
+
     /**
      * The path to the "home" route for your application.
      *
@@ -27,13 +30,28 @@ class RouteServiceProvider extends ServiceProvider
         $this->configureRateLimiting();
 
         $this->routes(function () {
-            Route::middleware('api')
-                ->prefix('api')
-                ->group(base_path('routes/api.php'));
+            foreach ($this->centralDomains() as $domain) {
+                Route::middleware(['api', InitializeTenancyByDomain::class, PreventAccessFromCentralDomains::class])
+                     ->domain($domain)
+                     ->prefix('api')
+                     ->group(base_path('routes/api.php'));
 
-            Route::middleware('web')
-                ->group(base_path('routes/web.php'));
+                Route::middleware('web')
+                     ->domain($domain)
+                     ->group(base_path('routes/web.php'));
+            }
         });
+    }
+
+    protected function centralDomains(): array
+    {
+        $domains = config('tenancy.central_domains');
+
+        if ( ! is_array($domains)) {
+            throw new \RuntimeException(message: "Tenancy Central Domain should be an array");
+        }
+
+        return (array) $domains;
     }
 
     /**
