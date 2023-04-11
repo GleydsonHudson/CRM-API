@@ -12,7 +12,6 @@ use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
 
 class RouteServiceProvider extends ServiceProvider
 {
-
     /**
      * The path to the "home" route for your application.
      *
@@ -47,8 +46,8 @@ class RouteServiceProvider extends ServiceProvider
     {
         $domains = config('tenancy.central_domains');
 
-        if ( ! is_array($domains)) {
-            throw new \RuntimeException(message: "Tenancy Central Domain should be an array");
+        if (! is_array($domains)) {
+            throw new \RuntimeException(message: 'Tenancy Central Domain should be an array');
         }
 
         return (array) $domains;

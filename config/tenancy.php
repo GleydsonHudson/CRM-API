@@ -5,7 +5,6 @@ declare(strict_types=1);
 use App\Models\Tenant;
 use Stancl\Tenancy\Database\Models\Domain;
 
-
 return [
     'tenant_model' => Tenant::class,
     'id_generator' => Stancl\Tenancy\UUIDGenerator::class,
@@ -20,7 +19,7 @@ return [
     'central_domains' => [
         '127.0.0.1',
         'localhost',
-        'crm.test'
+        'crm.test',
     ],
 
     /**
